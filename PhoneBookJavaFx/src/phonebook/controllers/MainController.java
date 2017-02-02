@@ -1,5 +1,6 @@
 package phonebook.controllers;
 
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -46,20 +47,50 @@ public class MainController {
     private Label labelCount;
     @FXML
     private void initialize() {
+        tablePhoneBook.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         columnNames.setCellValueFactory(new PropertyValueFactory<Person, String>("names"));
         columnPhone.setCellValueFactory(new PropertyValueFactory<Person, String>("phone"));
 
+        // we add Listener to listen for changed data and display actual count of records
+        phoneBookImpl.getPersonList().addListener(new ListChangeListener<Person>() {
+            @Override
+            public void onChanged(Change<? extends Person> c) {
+                updateCountLabel();
+            }
+        });
         phoneBookImpl.fillTestData();
 
         tablePhoneBook.setItems(phoneBookImpl.getPersonList());
 
-        updateCountLabel();
     }
 
     private void updateCountLabel() {
         labelCount.setText("Count Records: " + phoneBookImpl.getPersonList().size());
     }
+
     public void showDialog(ActionEvent actionEvent) {
+        Object source = actionEvent.getSource();
+
+        // if what is clicked is not Button get out of the method
+        if(!(source instanceof Button)){
+            return;
+        }
+
+        Button clickedButton = (Button) source;
+        Person selectedPerson = (Person)tablePhoneBook.getSelectionModel().getSelectedItem();
+
+        switch (clickedButton.getId()){
+            case "btnAdd":
+                System.out.println("add " + selectedPerson);
+                break;
+            case "btnEdit":
+                System.out.println("edit " + selectedPerson);
+                break;
+            case "btnDelete":
+                System.out.println("delete " + selectedPerson);
+                break;
+
+        }
         try {
             Stage stage = new Stage();
             Parent root = FXMLLoader.load(getClass().getResource("../fxml/edit.fxml"));

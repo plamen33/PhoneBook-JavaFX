@@ -26,6 +26,13 @@ public class Person {
         this.names = names;
     }
 
-
+    // I do this in order to set Person data to String and then when I click record and click on add button - it will show in console the selected record
+    @Override
+    public String toString() {
+        return "Person{" +
+                "names='" + names + '\'' +
+                ", phone='" + phone + '\'' +
+                '}';
+    }
 
 }
