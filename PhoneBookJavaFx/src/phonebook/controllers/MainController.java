@@ -1,12 +1,13 @@
 package phonebook.controllers;
 import javafx.beans.property.ObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,11 +15,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
 import phonebook.interfaces.impls.CollectionPhoneBook;
 import phonebook.objects.Person;
+import phonebook.utils.DialogManager;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -59,6 +60,7 @@ public class MainController implements Initializable{
     @FXML
     private Label labelCount;
 
+
     // these parameters were taken out here in order them tp be accessed from the level of the class
     private Parent fxmlEdit;
     private FXMLLoader fxmlLoader = new FXMLLoader();
@@ -66,6 +68,8 @@ public class MainController implements Initializable{
     private Stage editDialogStage;
 
     private ResourceBundle resourceBundle;
+
+    private ObservableList<Person> backupList;
 
     public void setMainStage(Stage mainStage){
         this.mainStage = mainStage;
@@ -93,14 +97,15 @@ public class MainController implements Initializable{
     }
     private void fillData() {
         phoneBookImpl.fillTestData();
+        backupList = FXCollections.observableArrayList();
+        backupList.addAll(phoneBookImpl.getPersonList());
         tablePhoneBook.setItems(phoneBookImpl.getPersonList());
     }
 
     private void initLoader() {
         try {
-
             fxmlLoader.setLocation(getClass().getResource("../fxml/edit.fxml"));
-            fxmlLoader.setResources(ResourceBundle.getBundle("phonebook.bundles.Locale", new Locale("bg")));
+            fxmlLoader.setResources(ResourceBundle.getBundle("phonebook.bundles.Locale", new Locale("en")));
             fxmlEdit = fxmlLoader.load();
             editDialogController = fxmlLoader.getController();
 
@@ -121,7 +126,7 @@ public class MainController implements Initializable{
         if(!(source instanceof Button)){
             return;
         }
-
+        Person selectedPerson = (Person) tablePhoneBook.getSelectionModel().getSelectedItem();
         Button clickedButton = (Button) source;
 
 
@@ -129,18 +134,34 @@ public class MainController implements Initializable{
             case "btnAdd":
                 editDialogController.setPerson(new Person());
                 showDialog();
+                if(editDialogController.getPerson().getNames() == ""|| editDialogController.getPerson().getPhone() == ""){
+                    break;
+                }
                 phoneBookImpl.add(editDialogController.getPerson());
                 break;
             case "btnEdit":
-                editDialogController.setPerson((Person)tablePhoneBook.getSelectionModel().getSelectedItem());
+                if (!personIsSelected(selectedPerson)) {
+                    return;
+                }
+                editDialogController.setPerson(selectedPerson);
                 showDialog();
                 break;
             case "btnDelete":
-                phoneBookImpl.delete((Person) tablePhoneBook.getSelectionModel().getSelectedItem());
+                if (!personIsSelected(selectedPerson)) {
+                    return;
+                }
+                phoneBookImpl.delete(selectedPerson);
                 break;
 
         }
 
+    }
+    private boolean personIsSelected(Person selectedPerson) {
+        if(selectedPerson == null){
+            DialogManager.showErrorDialog(resourceBundle.getString("error"), resourceBundle.getString("select_person"));
+            return false;
+        }
+        return true;
     }
     private void showDialog() {
 
@@ -182,5 +203,15 @@ public class MainController implements Initializable{
             e.printStackTrace();
         }
     }
-}
+    // implementation of search
+    public void actionSearch(ActionEvent actionEvent){
+        phoneBookImpl.getPersonList().clear();
 
+        for (Person person: backupList) {
+            if(person.getNames().toLowerCase().contains(txtSearch.getText().toLowerCase())|| person.getPhone().toLowerCase().contains(txtSearch.getText().toLowerCase())){
+                phoneBookImpl.getPersonList().add(person);
+            }
+        }
+    }
+
+}

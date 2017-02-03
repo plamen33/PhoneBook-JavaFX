@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import phonebook.objects.Person;
+import phonebook.utils.DialogManager;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -47,10 +48,22 @@ public class EditDialogController implements Initializable{
     }
 
     public void actionSave(ActionEvent actionEvent) {
+        if(!checkValues()){
+            return;
+        }
         person.setPhone(txtPhone.getText());
         person.setNames(txtNames.getText());
         actionClose(actionEvent);
     }
+
+    private boolean checkValues(){
+        if(txtNames.getText().trim().length()== 0 || txtPhone.getText().trim().length()== 0){
+            DialogManager.showInfoDialog(resourceBundle.getString("error"), resourceBundle.getString("fill_fields"));
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resourceBundle = resources;

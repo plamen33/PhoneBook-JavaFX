@@ -17,12 +17,12 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("../fxml/main.fxml"));
-        fxmlLoader.setResources(ResourceBundle.getBundle("phonebook.bundles.Locale", new Locale("bg")));
+        fxmlLoader.setResources(ResourceBundle.getBundle("phonebook.bundles.Locale", new Locale("en")));
         Parent fxmlMain = fxmlLoader.load();
         MainController mainController = fxmlLoader.getController();
         mainController.setMainStage(primaryStage);
 
-        primaryStage.setTitle("Phone Book JavaFX");
+        primaryStage.setTitle(fxmlLoader.getResources().getString("phone_book"));
         primaryStage.setMinHeight(600);
         primaryStage.setMinWidth(400);
         primaryStage.setScene(new Scene(fxmlMain, 300, 275));
