@@ -1,9 +1,11 @@
 package phonebook.controllers;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -13,12 +15,18 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.controlsfx.control.textfield.CustomTextField;
+import org.controlsfx.control.textfield.TextFields;
 import phonebook.interfaces.impls.CollectionPhoneBook;
 import phonebook.objects.Person;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
-public class MainController {
+public class MainController implements Initializable{
 
     private CollectionPhoneBook phoneBookImpl = new CollectionPhoneBook();
 
@@ -34,7 +42,7 @@ public class MainController {
     private Button btnDelete;
 
     @FXML
-    private TextField txtSearch;
+    private CustomTextField txtSearch;
 
     @FXML
     private Button btnSearch;
@@ -57,23 +65,13 @@ public class MainController {
     private EditDialogController editDialogController;
     private Stage editDialogStage;
 
+    private ResourceBundle resourceBundle;
+
     public void setMainStage(Stage mainStage){
         this.mainStage = mainStage;
     }
 
 
-    @FXML
-    private void initialize() {
-        //tablePhoneBook.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        columnNames.setCellValueFactory(new PropertyValueFactory<Person, String>("names"));
-        columnPhone.setCellValueFactory(new PropertyValueFactory<Person, String>("phone"));
-
-        initListeners();
-        fillData();
-        initLoader();
-
-
-    }
     private void initListeners() {
         // we add Listener to listen for changed data and display actual count of records
         phoneBookImpl.getPersonList().addListener(new ListChangeListener<Person>() {
@@ -102,6 +100,7 @@ public class MainController {
         try {
 
             fxmlLoader.setLocation(getClass().getResource("../fxml/edit.fxml"));
+            fxmlLoader.setResources(ResourceBundle.getBundle("phonebook.bundles.Locale", new Locale("bg")));
             fxmlEdit = fxmlLoader.load();
             editDialogController = fxmlLoader.getController();
 
@@ -111,11 +110,8 @@ public class MainController {
     }
 
 
-
-
-
     private void updateCountLabel() {
-        labelCount.setText("Count Records: " + phoneBookImpl.getPersonList().size());
+        labelCount.setText(resourceBundle.getString("count")+": " + phoneBookImpl.getPersonList().size());
     }
 
     public void actionButtonPressed(ActionEvent actionEvent){
@@ -150,7 +146,7 @@ public class MainController {
 
         if (editDialogStage==null) {   //// we initialize the stage once - it is the first time when we have null
             editDialogStage = new Stage();
-            editDialogStage.setTitle("Edit Record");
+            editDialogStage.setTitle(resourceBundle.getString("edit"));
             editDialogStage.setMinHeight(150);
             editDialogStage.setMinWidth(300);
             editDialogStage.setResizable(false); // the window cannot be resized
@@ -162,4 +158,29 @@ public class MainController {
         editDialogStage.showAndWait();  // to wait closing window
 
     }
+
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        this.resourceBundle = resources;
+        //tablePhoneBook.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        columnNames.setCellValueFactory(new PropertyValueFactory<Person, String>("names"));
+        columnPhone.setCellValueFactory(new PropertyValueFactory<Person, String>("phone"));
+        setupClearButtonField(txtSearch);
+        initListeners();
+        fillData();
+        initLoader();
+    }
+
+    // clear button implementation from controlfx
+    private void setupClearButtonField(CustomTextField customTextField) {
+        try {
+            Method m = TextFields.class.getDeclaredMethod("setupClearButtonField", TextField.class, ObjectProperty.class);
+            m.setAccessible(true);
+            m.invoke(null, customTextField, customTextField.rightProperty());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }
+

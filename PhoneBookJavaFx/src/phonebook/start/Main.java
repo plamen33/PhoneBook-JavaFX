@@ -8,12 +8,16 @@ import javafx.stage.Stage;
 import phonebook.controllers.MainController;
 import phonebook.interfaces.impls.CollectionPhoneBook;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("../fxml/main.fxml"));
+        fxmlLoader.setResources(ResourceBundle.getBundle("phonebook.bundles.Locale", new Locale("bg")));
         Parent fxmlMain = fxmlLoader.load();
         MainController mainController = fxmlLoader.getController();
         mainController.setMainStage(primaryStage);

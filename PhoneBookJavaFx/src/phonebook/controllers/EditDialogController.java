@@ -2,13 +2,17 @@ package phonebook.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import phonebook.objects.Person;
 
-public class EditDialogController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class EditDialogController implements Initializable{
     @FXML
     private Button btnOk;
 
@@ -23,6 +27,8 @@ public class EditDialogController {
 
     private Person person;
 
+    private ResourceBundle resourceBundle;
+
     public void setPerson(Person person) {
         if (person == null){
             return;
@@ -34,16 +40,19 @@ public class EditDialogController {
     public Person getPerson() {
         return person;
     }
-
     public void actionClose(ActionEvent actionEvent) {
         Node source = (Node) actionEvent.getSource();
         Stage stage = (Stage) source.getScene().getWindow();
-        stage.close();
+        stage.hide();
     }
+
     public void actionSave(ActionEvent actionEvent) {
         person.setPhone(txtPhone.getText());
         person.setNames(txtNames.getText());
         actionClose(actionEvent);
     }
-
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        this.resourceBundle = resources;
+    }
 }
