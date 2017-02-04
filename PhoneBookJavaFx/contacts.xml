@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<contacts>
+<contact>
+	<names>333</names>
+	<phone>7777777</phone>
+</contact>
+<contact>
+	<names>Michael</names>
+	<phone>3343232132</phone>
+</contact>
+<contact>
+	<names>Peter</names>
+	<phone>121333412</phone>
+</contact>
+<contact>
+	<names>Filip</names>
+	<phone>1213123123</phone>
+</contact>
+<contact>
+	<names>Ioan</names>
+	<phone>02831823912</phone>
+</contact>
+<contact>
+	<names>Donald</names>
+	<phone>17739843043</phone>
+</contact>
+<contact>
+	<names>Kiril</names>
+	<phone>37739823043</phone>
+</contact>
+<contact>
+	<names>Vladimir</names>
+	<phone>77739843043</phone>
+</contact>
+</contacts>

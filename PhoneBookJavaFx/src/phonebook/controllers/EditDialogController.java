@@ -38,6 +38,10 @@ public class EditDialogController implements Initializable{
         txtNames.setText(person.getNames());
         txtPhone.setText(person.getPhone());
     }
+    public void updatePerson(Person person) {
+        person.setNames(txtNames.getText());
+        person.setPhone(txtPhone.getText());
+    }
     public Person getPerson() {
         return person;
     }

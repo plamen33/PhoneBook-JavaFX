@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import phonebook.controllers.MainController;
 import phonebook.interfaces.impls.CollectionPhoneBook;
@@ -25,15 +26,12 @@ public class Main extends Application {
         primaryStage.setTitle(fxmlLoader.getResources().getString("phone_book"));
         primaryStage.setMinHeight(600);
         primaryStage.setMinWidth(400);
-        primaryStage.setScene(new Scene(fxmlMain, 300, 275));
+        Scene scene = new Scene(fxmlMain, 300, 200); // ++
+        scene.getStylesheets().add(getClass().getResource("../css/style.css").toExternalForm()); //++
+        primaryStage.setScene(scene);/// ++
+        primaryStage.getIcons().add(new Image(getClass().getResource("../images/phonebook.png").toExternalForm()));
         primaryStage.show();
 
-        testData();
-    }
-    private void testData() {
-//        CollectionPhoneBook addressBook = new CollectionPhoneBook();
-//        addressBook.fillTestData();
-//        addressBook.print();
     }
 
     public static void main(String[] args) {

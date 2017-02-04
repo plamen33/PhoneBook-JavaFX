@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
 import phonebook.interfaces.impls.CollectionPhoneBook;
+import phonebook.interfaces.impls.ContactData;
 import phonebook.objects.Person;
 import phonebook.utils.DialogManager;
 
@@ -29,7 +30,7 @@ import java.util.ResourceBundle;
 
 public class MainController implements Initializable{
 
-    private CollectionPhoneBook phoneBookImpl = new CollectionPhoneBook();
+    private ContactData phoneBookImpl = new ContactData();
 
     private Stage mainStage;
 
@@ -78,7 +79,7 @@ public class MainController implements Initializable{
 
     private void initListeners() {
         // we add Listener to listen for changed data and display actual count of records
-        phoneBookImpl.getPersonList().addListener(new ListChangeListener<Person>() {
+        phoneBookImpl.getContacts().addListener(new ListChangeListener<Person>() {
             @Override
             public void onChanged(Change<? extends Person> c) {
                 updateCountLabel();
@@ -89,17 +90,22 @@ public class MainController implements Initializable{
             @Override
             public void handle(MouseEvent event) {
                 if (event.getClickCount() == 2) {
-                    editDialogController.setPerson((Person)tablePhoneBook.getSelectionModel().getSelectedItem());
+                    Person selectedPerson = (Person) tablePhoneBook.getSelectionModel().getSelectedItem();
+                    editDialogController.setPerson(selectedPerson);
+                    editDialogController.setPerson(selectedPerson);
                     showDialog();
+
+                    editDialogController.updatePerson(selectedPerson);
+                    phoneBookImpl.saveContacts();
                 }
             }
         });
     }
     private void fillData() {
-        phoneBookImpl.fillTestData();
+        phoneBookImpl.loadContacts();
         backupList = FXCollections.observableArrayList();
-        backupList.addAll(phoneBookImpl.getPersonList());
-        tablePhoneBook.setItems(phoneBookImpl.getPersonList());
+        backupList.addAll(phoneBookImpl.getContacts());
+        tablePhoneBook.setItems(phoneBookImpl.getContacts());
     }
 
     private void initLoader() {
@@ -116,7 +122,7 @@ public class MainController implements Initializable{
 
 
     private void updateCountLabel() {
-        labelCount.setText(resourceBundle.getString("count")+": " + phoneBookImpl.getPersonList().size());
+        labelCount.setText(resourceBundle.getString("count")+": " + phoneBookImpl.getContacts().size());
     }
 
     public void actionButtonPressed(ActionEvent actionEvent){
@@ -138,6 +144,7 @@ public class MainController implements Initializable{
                     break;
                 }
                 phoneBookImpl.add(editDialogController.getPerson());
+                phoneBookImpl.saveContacts();
                 break;
             case "btnEdit":
                 if (!personIsSelected(selectedPerson)) {
@@ -145,14 +152,17 @@ public class MainController implements Initializable{
                 }
                 editDialogController.setPerson(selectedPerson);
                 showDialog();
+//                phoneBookImpl.update(selectedPerson);
+                editDialogController.updatePerson(selectedPerson);
+                phoneBookImpl.saveContacts();
                 break;
             case "btnDelete":
                 if (!personIsSelected(selectedPerson)) {
                     return;
                 }
                 phoneBookImpl.delete(selectedPerson);
+                phoneBookImpl.saveContacts();
                 break;
-
         }
 
     }
@@ -205,11 +215,11 @@ public class MainController implements Initializable{
     }
     // implementation of search
     public void actionSearch(ActionEvent actionEvent){
-        phoneBookImpl.getPersonList().clear();
+        phoneBookImpl.getContacts().clear();
 
         for (Person person: backupList) {
             if(person.getNames().toLowerCase().contains(txtSearch.getText().toLowerCase())|| person.getPhone().toLowerCase().contains(txtSearch.getText().toLowerCase())){
-                phoneBookImpl.getPersonList().add(person);
+                phoneBookImpl.getContacts().add(person);
             }
         }
     }
