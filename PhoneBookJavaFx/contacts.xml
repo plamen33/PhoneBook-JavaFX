@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <contacts>
 <contact>
-	<names>333</names>
-	<phone>7777777</phone>
-</contact>
-<contact>
 	<names>Michael</names>
 	<phone>3343232132</phone>
 </contact>
 <contact>
 	<names>Peter</names>
-	<phone>121333412</phone>
+	<phone>12333412</phone>
 </contact>
 <contact>
 	<names>Filip</names>

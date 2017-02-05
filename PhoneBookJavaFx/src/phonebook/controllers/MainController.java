@@ -72,6 +72,8 @@ public class MainController implements Initializable{
 
     private ObservableList<Person> backupList;
 
+    private boolean searchCheck = false;
+
     public void setMainStage(Stage mainStage){
         this.mainStage = mainStage;
     }
@@ -92,8 +94,12 @@ public class MainController implements Initializable{
                 if (event.getClickCount() == 2) {
                     Person selectedPerson = (Person) tablePhoneBook.getSelectionModel().getSelectedItem();
                     editDialogController.setPerson(selectedPerson);
-                    editDialogController.setPerson(selectedPerson);
                     showDialog();
+                    if (searchCheck){
+                        phoneBookImpl.getContacts().clear();
+                        phoneBookImpl.loadContacts();
+                        searchCheck = false;
+                    }
 
                     editDialogController.updatePerson(selectedPerson);
                     phoneBookImpl.saveContacts();
@@ -134,6 +140,11 @@ public class MainController implements Initializable{
         }
         Person selectedPerson = (Person) tablePhoneBook.getSelectionModel().getSelectedItem();
         Button clickedButton = (Button) source;
+        if (searchCheck){
+            phoneBookImpl.getContacts().clear();
+            phoneBookImpl.loadContacts();
+            searchCheck = false;
+        }
 
 
         switch (clickedButton.getId()){
@@ -215,12 +226,29 @@ public class MainController implements Initializable{
     }
     // implementation of search
     public void actionSearch(ActionEvent actionEvent){
+        if(searchCheck){
+            phoneBookImpl.getContacts().clear();
+            phoneBookImpl.loadContacts();
+        }
+        ObservableList<Person> obsList = FXCollections.observableArrayList();
+        obsList.addAll(phoneBookImpl.getContacts());
         phoneBookImpl.getContacts().clear();
 
-        for (Person person: backupList) {
+        for (Person person: obsList) {
             if(person.getNames().toLowerCase().contains(txtSearch.getText().toLowerCase())|| person.getPhone().toLowerCase().contains(txtSearch.getText().toLowerCase())){
                 phoneBookImpl.getContacts().add(person);
             }
+        }
+        if(phoneBookImpl.getContacts().isEmpty()){
+            DialogManager.showInfoDialog(resourceBundle.getString("notification"), resourceBundle.getString("no_records"));
+            phoneBookImpl.loadContacts();
+            searchCheck = false;
+        }
+        if(txtSearch.getText().equals("")){
+            searchCheck = false;
+        }
+        else{
+            searchCheck = true;
         }
     }
 
